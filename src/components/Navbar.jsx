@@ -21,10 +21,7 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const links = [
-    { to: '/', label: 'Home' },
-    { to: '/products', label: 'Shop' },
-  ]
+ 
 
   const isActive = (path) => location.pathname === path
 
@@ -39,19 +36,7 @@ export default function Navbar() {
             <span className="text-xl font-bold text-primary">ShopVibe</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
-            {links.map(link => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className={`text-sm font-medium transition-colors hover:text-accent ${
-                  isActive(link.to) ? 'text-accent' : 'text-gray-600'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
+          
 
           <div className="flex items-center gap-3">
             <Link
