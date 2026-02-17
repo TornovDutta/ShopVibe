@@ -1,18 +1,29 @@
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
-import ProductCard from '../components/ProductCard'
+import { useRecommendations } from '../context/RecommendationContext'
+import SmartRecommendations from '../components/SmartRecommendations'
 import products from '../data/products'
 
 export default function ProductDetail() {
   const { id } = useParams()
   const { addToCart } = useCart()
+  const { trackView, getRelated } = useRecommendations()
   const [quantity, setQuantity] = useState(1)
   const [selectedSize, setSelectedSize] = useState(null)
   const [selectedColor, setSelectedColor] = useState(null)
   const [added, setAdded] = useState(false)
 
   const product = products.find(p => p.id === Number(id))
+
+  useEffect(() => {
+    if (product) trackView(product.id)
+  }, [product, trackView])
+
+  const related = useMemo(
+    () => (product ? getRelated(product.id, 4) : []),
+    [product, getRelated]
+  )
 
   if (!product) {
     return (
@@ -25,10 +36,6 @@ export default function ProductDetail() {
       </div>
     )
   }
-
-  const related = products
-    .filter(p => p.category === product.category && p.id !== product.id)
-    .slice(0, 4)
 
   const discount = product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
@@ -169,12 +176,11 @@ export default function ProductDetail() {
 
         {related.length > 0 && (
           <section className="mt-16">
-            <h2 className="text-2xl font-bold text-primary mb-6">You May Also Like</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {related.map(p => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
+            <SmartRecommendations
+              products={related}
+              title="You May Also Like"
+              subtitle="Based on your browsing and this product"
+            />
           </section>
         )}
       </div>

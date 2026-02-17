@@ -1,12 +1,21 @@
 import { Link } from 'react-router-dom'
+import { useMemo } from 'react'
 import HeroSection from '../components/HeroSection'
 import ProductCard from '../components/ProductCard'
+import SmartRecommendations from '../components/SmartRecommendations'
 import Features from '../components/Features'
 import Newsletter from '../components/Newsletter'
+import { useRecommendations } from '../context/RecommendationContext'
 import products, { categories } from '../data/products'
 
 export default function Home() {
   const featured = products.filter(p => p.featured).slice(0, 4)
+  const { getRecommendations } = useRecommendations()
+  const featuredIds = featured.map(p => p.id)
+  const recommended = useMemo(
+    () => getRecommendations(4, featuredIds),
+    [getRecommendations, featuredIds]
+  )
 
   return (
     <div>
@@ -66,6 +75,18 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {recommended.length > 0 && (
+        <section className="py-16 bg-light">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <SmartRecommendations
+              products={recommended}
+              title="Recommended For You"
+              subtitle="Personalized picks based on your activity"
+            />
+          </div>
+        </section>
+      )}
 
       <Features />
 

@@ -1,9 +1,14 @@
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { useRecommendations } from '../context/RecommendationContext'
 import CartItem from '../components/CartItem'
+import SmartRecommendations from '../components/SmartRecommendations'
 
 export default function Cart() {
   const { cartItems, cartTotal, clearCart } = useCart()
+  const { getForCart } = useRecommendations()
+  const cartRecommendations = useMemo(() => getForCart(4), [getForCart])
 
   if (cartItems.length === 0) {
     return (
@@ -100,6 +105,15 @@ export default function Cart() {
             </div>
           </div>
         </div>
+        {cartRecommendations.length > 0 && (
+          <section className="mt-12">
+            <SmartRecommendations
+              products={cartRecommendations}
+              title="Complete Your Look"
+              subtitle="Pairs well with items in your cart"
+            />
+          </section>
+        )}
       </div>
     </div>
   )
